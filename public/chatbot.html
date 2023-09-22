@@ -10,45 +10,30 @@
 			font-family: Courier New;
 		}
 		.wrapper {
-			width: 100%;
+			border: 1px solid black;
+			position: absolute;
+			top: 50%;
+			transform: translateX(-50%);
+			width: 50%;
 			display: inline-flex;
 			text-align: left;
 		}
 		.container {
-			width: 90%;
-			margin: 0 auto;
+			padding-bottom: 15px;
+
+			width: 96.5%;
+			margin-left: auto;
 			position: relative;
 		}
-	</style>
-	<script>
-		const userAction = async () => {
-			const reply = "" + document.forms["input"]["reply"].value;
-			const input = "" + document.forms["input"]["input"].value;
-			const reponse = await fetch('https://api.openai.com/v1/chat/completions', {
-				method: "POST",
-				body: JSON.stringify({"model": "gpt-3.5-turbo", "messages": 
-					[{"role":"assistant","content": reply},
-					 {"role":"user","content": input}
-					]}),
-				headers: {
-					"content-type": "application/json",
-					Authorization: "Bearer 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",
-				}
-			}).then((response) => {
-				if (response.ok) {
-					response.json().then((json) => {
-						const AnswerLog=[document.getElementById("output").innerHTML,
-							"<br><br>ME: ",input,"<br><br>AI: ",json.choices[0].message.content];
-						document.forms["input"]["reply"].value = json.choices[0].message.content;
-						document.forms["input"]["input"].value = "";
-						document.getElementById("output").innerHTML = AnswerLog.join("");
-					});
-				}
-			});
+		#input{
+			width: 100%;
+			margin: 0px;
+			padding: 0px;
 		}
-	</script>
+	</style>
 </head>
 <body>
+	<h1>Chat GPT</h1>
 	<div class = "wrapper">
 		<div class = "container">
 			<p id="output" style="white-space: pre-wrap;"></p>
@@ -59,4 +44,31 @@
 		</div>
 	</div>
 </body>
+<script>
+    const userAction = async () => {
+        const reply = "" + document.forms["input"]["reply"].value;
+        const input = "" + document.forms["input"]["input"].value;
+        const reponse = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: "POST",
+            body: JSON.stringify({"model": "gpt-3.5-turbo", "messages": 
+                [{"role":"assistant","content": reply},
+                 {"role":"user","content": input}
+                ]}),
+            headers: {
+                "content-type": "application/json",
+                Authorization: "Bearer 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",
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((json) => {
+                    const AnswerLog=[document.getElementById("output").innerHTML,
+                        "<br><br>ME: ",input,"<br><br>AI: ",json.choices[0].message.content];
+                    document.forms["input"]["reply"].value = json.choices[0].message.content;
+                    document.forms["input"]["input"].value = "";
+                    document.getElementById("output").innerHTML = AnswerLog.join("");
+                });
+            }
+        });
+    }
+</script>
 </html> 
