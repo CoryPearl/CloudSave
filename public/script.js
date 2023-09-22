@@ -1,5 +1,8 @@
 // List:
-//Make it save all info using node
+//make chatbot
+//Make folders work 
+
+//Chat bot
 
 //clock
 function displayTime() {
@@ -47,7 +50,7 @@ function dropdown(){
 function addFile(){
   const whole = document.createElement("div");;
   const deleteButton = document.createElement("button");
-  const file = document.createElement("a");
+  const file3 = document.createElement("a");
   const userInput = window.prompt("Enter File Name:");
   const data = { userInput: userInput };
   fetch('/addUserInput4', {
@@ -78,14 +81,14 @@ function addFile(){
     whole.style.justifyContent = "space-between";
     deleteButton.textContent = "X";
     deleteButton.addEventListener("click", removeItem);
-    file.setAttribute("href", objectURL);
-    file.setAttribute("download", uploadedFile.name);
-    file.innerHTML = userInput;
-    file.style.backgroundColor = "#f1f1f1";
+    file3.setAttribute("href", objectURL);
+    file3.setAttribute("download", uploadedFile.name);
+    file3.innerHTML = userInput;
+    file3.style.backgroundColor = "#f1f1f1";
     });
     this.parentNode.appendChild(whole);
     whole.appendChild(file);
-    file.style.width = "90%";
+    file3.style.width = "90%";
     whole.appendChild(deleteButton);
   }
   if(userInput.length == 0){
@@ -186,10 +189,12 @@ function newFolder() {
     alert("Error: too long, please try again");
   }
 }
-
-var loadFile = function(event) {
+var filenames = [];
+var filenameURL = [];
+const loadFile = function(event) {
   const userInput = window.prompt("Enter File Name:");
   if (userInput.length !== 0 && userInput.length < 16) {
+
     const data = { userInput: userInput };
     fetch('/addUserInput2', {
       method: 'POST',
@@ -219,23 +224,28 @@ var loadFile = function(event) {
       const deleteButton = document.createElement("button");
       deleteButton.textContent = "Delete";
       deleteButton.addEventListener("click", removeItem);
+      filenameURL.push(uploadedFile.name);
+      deleteButton.addEventListener("click", () => {
+        deleteFileAndElement(uploadedFile.name)
+      });
+      
+      const data2 = { fileName: uploadedFile.name };
+      console.log(uploadedFile.name);
+      fetch('/addUserInput6', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data2),
+      });
 
       files.appendChild(whole);
       whole.style.zIndex = "10";
       whole.appendChild(file);
       whole.appendChild(label);
       whole.appendChild(deleteButton);
-      const data2 = { userInput: objectURL };
-      fetch('/addUserInput3', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data2),
-      })
-        .then(response => response.json())
-
-
+      uploadFile2(uploadedFile);
+    
   }
   if (userInput.length == 0) {
     alert("Error no text found");
@@ -244,56 +254,116 @@ var loadFile = function(event) {
     alert("Error too long please try again");
   }
 };
-var objectURL = [];
+
+function uploadFile2(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  fetch('/upload', {
+    method: 'POST',
+    body: formData,
+  })
+  .then(response => response.text())
+  .catch(error => console.error(error));
+}
+
+
+//upload single files on reload
+
 function printFileNames() {
   let i = 0;
-  fetch('/getUserInput3')
-  .then(response => response.json())
-  .then(data => {
-    data.forEach(urlNames => {
-      objectURL.push(urlNames);
-    })
-  });
+  fetch('/getUserInput6')
+    .then(response => response.json())
+    .then(data => {
+      data.forEach(fileNameURL => {
+        filenameURL.push(fileNameURL);
+      });
+      fetch('/list')
+    });
   fetch('/getUserInput2')
     .then(response => response.json())
     .then(data => {
       data.forEach(fileName => {
-        let file = document.createElement("a");
-        var files = document.getElementById("files");
-        file.setAttribute('href', objectURL[i]);
-        file.setAttribute('download', fileName);
-        file.innerHTML = "<img src='file.png' width='112px' margin = '0'>"; 
-        const whole = document.createElement('div');
-        whole.style.width = "175px";
-        whole.style.height = "175px";
-        whole.style.display = "flex";
-        whole.style.flexDirection = "column";      
-        whole.style.alignItems = "center";
-        whole.style.justifyContent = "center";
-        whole.style.marginTop = "11px";
-        const label = document.createElement("label");
-        label.innerText = fileName;
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-        deleteButton.addEventListener("click", removeItem);
-
-        files.appendChild(whole);
-        whole.style.zIndex = "10";
-        whole.appendChild(file);
-        whole.appendChild(label);
-        whole.appendChild(deleteButton);
-        i++;
+        filenames.push(fileName);
       });
+      fetch('/list')
+    .then(response => response.json())
+    .then(files => {
+        files.forEach(file => {
+            
+          let file2 = document.createElement("a");
+          var files = document.getElementById("files");
+          file2.href = `/uploads/${filenameURL[i]}`;
+          file2.setAttribute('download', `/uploads/${filenameURL[i]}`);
+          file2.innerHTML = "<img src='file.png' width='112px' margin = '0'>"; 
+          const whole = document.createElement('div');
+          whole.style.width = "175px";
+          whole.style.height = "175px";
+          whole.style.display = "flex";
+          whole.style.flexDirection = "column";      
+          whole.style.alignItems = "center";
+          whole.style.justifyContent = "center";
+          whole.style.marginTop = "11px";
+          const label = document.createElement("label");
+          label.innerText = filenames[i];
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", removeItem);
+          const filenameURL1 = filenameURL[i];
+          deleteButton.addEventListener("click", () => {
+            deleteFileAndElement(filenameURL1);
+          });
+          
+  
+          files.appendChild(whole);
+          whole.style.zIndex = "10";
+          whole.appendChild(file2);
+          whole.appendChild(label);
+          whole.appendChild(deleteButton);
+          i++;
+            
+        });
+    })
+    .catch(error => console.error(error));
+
+        
     })
     .catch(error => {
       console.error('Error:', error);
     });
 }
+var h = 0;
+function deleteFileAndElement(fileName) {
+  if (h == 1){
+    h = 0;
+  const userConfirmed = confirm("Are you sure?");
+
+  if (userConfirmed) {
+    fetch(`/delete/${fileName}`, {
+      method: 'DELETE',
+    })
+    .then(response => response.text())
+    .then(message => {
+      // alert(message);
+      // Remove the element from the page on successful deletion
+      const elementToRemove = document.querySelector(`[data-filename="${fileName}"]`);
+      if (elementToRemove) {
+        elementToRemove.remove();
+      }
+    })
+    .catch(error => console.error(error));
+      }
+    }
+  }
+  
 
 function removeItem(){
-  const userInput = window.prompt("Type Y to delete or N to cancel");
-  if(userInput == "y" || userInput == "Y"){
+  const userConfirmed = confirm("Do you want to proceed?");
+  if(userConfirmed){
     this.parentNode.remove();
+    h = 1;
+  }else{
+    h = 0;
   }
 }
 
@@ -381,24 +451,25 @@ function printFolders(){
         folder.appendChild(dropdown1);
         dropdown1.appendChild(uploadButton);
         dropdown1.appendChild(closeButton);
-        
-        const whole = document.createElement("div");;
-        const deleteButton = document.createElement("button");
-        const file = document.createElement("a");
+
+        //upload files back to folder on reload
+        // const whole = document.createElement("div");;
+        // const deleteButton = document.createElement("button");
+        // const file = document.createElement("a");
         // const uploadedFile = uploadBut.files[0];
         // const objectURL = URL.createObjectURL(uploadedFile);
-        whole.style.display="flex";
-        whole.style.justifyContent = "space-between";
-        deleteButton.textContent = "X";
-        deleteButton.addEventListener("click", removeItem);
-        file.setAttribute("href", folderFileUrl[b]);
+        // whole.style.display="flex";
+        // whole.style.justifyContent = "space-between";
+        // deleteButton.textContent = "X";
+        // deleteButton.addEventListener("click", removeItem);
+        // file.setAttribute("href", folderFileUrl[b]);
         // file.setAttribute("download", uploadedFile.name);
-        file.innerHTML = folderFileNames[b];
-        file.style.backgroundColor = "#f1f1f1";
-        dropdown1.appendChild(whole);
-        whole.appendChild(file);
-        file.style.width = "90%";
-        whole.appendChild(deleteButton);
+        // file.innerHTML = folderFileNames[b];
+        // file.style.backgroundColor = "#f1f1f1";
+        // dropdown1.appendChild(whole);
+        // whole.appendChild(file);
+        // file.style.width = "90%";
+        // whole.appendChild(deleteButton);
         b++;
        
     });

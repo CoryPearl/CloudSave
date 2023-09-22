@@ -169,3 +169,12 @@ body {
   right: 121.45px;
   cursor: pointer;
 }
+
+.chatgpt{
+  width: 75px;
+  height: 75px;
+  position: absolute;
+  border-radius: 50%;
+  top: 85%;
+  left: 92%;
+}
