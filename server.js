@@ -116,29 +116,25 @@ app.post('/deleteFolder', (req, res) => {
   res.json({ success: true, message: 'User input added to the server array.' });
 });
 
-const folderName = 'uploads';
-const folderPath = path.join(__dirname, folderName);
+// const folderName = 'uploads';
+// const folderPath = path.join(__dirname, folderName);
 
-if (fs.existsSync(folderPath)) {
-  // Get a list of all files and subdirectories in the folder
-  const folderContents = fs.readdirSync(folderPath);
+// if (fs.existsSync(folderPath)) {
+//   const folderContents = fs.readdirSync(folderPath);
 
-  // Loop through the contents of the folder
-  for (const content of folderContents) {
-      const contentPath = path.join(folderPath, content);
+//   for (const content of folderContents) {
+//       const contentPath = path.join(folderPath, content);
 
-      // Check if the content is a file
-      if (fs.statSync(contentPath).isFile()) {
-          // Delete the file
-          fs.unlinkSync(contentPath);
-          console.log(`Deleted file: ${contentPath}`);
-      }
-  }
+//       if (fs.statSync(contentPath).isFile()) {
+//           fs.unlinkSync(contentPath);
+//           console.log(`Deleted file: ${contentPath}`);
+//       }
+//   }
 
-  console.log(`Folder "${folderPath}" has been cleared.`);
-} else {
-  console.error(`Folder "${folderPath}" does not exist.`);
-}
+//   console.log(`Folder "${folderPath}" has been cleared.`);
+// } else {
+//   console.error(`Folder "${folderPath}" does not exist.`);
+// }
 
 
 
