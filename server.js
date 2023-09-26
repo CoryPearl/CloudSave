@@ -115,7 +115,7 @@ app.post('/deleteFolder', (req, res) => {
   console.log(folderList);
   res.json({ success: true, message: 'User input added to the server array.' });
 });
-
+//auto emptys uploads folder
 // const folderName = 'uploads';
 // const folderPath = path.join(__dirname, folderName);
 
