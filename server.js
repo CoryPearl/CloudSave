@@ -3,10 +3,9 @@ const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
 const path = require('path');
-const openai = require('openai');
 
 const app = express();
-const port = 3000;
+
 
 
 app.use(bodyParser.json());
@@ -20,7 +19,6 @@ const folderList = [];
 const fileNameList = [];
 const fileNameListURL = [];
 const fileList = [];
-const folderFileUrlList = [];
 //folder names
 app.post('/addUserInput', (req, res) => {
   const { userInput } = req.body;
@@ -30,26 +28,6 @@ app.post('/addUserInput', (req, res) => {
 });
 app.get('/getUserInput', (req, res) => {
   res.json(folderList);
-});
-//folder file names
-app.post('/addUserInput4', (req, res) => {
-  const { userInput } = req.body;
-  fileList.push(userInput);
-  console.log(fileList);
-  res.json({ success: true, message: 'User input added to the server array.' });
-});
-app.get('/getFolderFiles', (req, res) => {
-  res.json(fileList);
-});
-//folder file urls
-app.post('/addUserInput5', (req, res) => {
-  const { userInput } = req.body;
-  folderFileUrlList.push(userInput);
-  console.log(fileList);
-  res.json({ success: true, message: 'User input added to the server array.' });
-});
-app.get('/getFolderFileUrl', (req, res) => {
-  res.json(fileList);
 });
 //single file names
 app.post('/addUserInput2', (req, res) => {
@@ -128,6 +106,16 @@ app.delete('/delete/:filename', (req, res) => {
   }
 });
 
+app.post('/deleteFolder', (req, res) => {
+  const { folderName } = req.body;
+  const index3 = folderList.indexOf(folderName);
+        if (index3 !== -1) {
+            folderList.splice(index3, 1);
+        }
+  console.log(folderList);
+  res.json({ success: true, message: 'User input added to the server array.' });
+});
+
 const folderName = 'uploads';
 const folderPath = path.join(__dirname, folderName);
 
@@ -155,7 +143,7 @@ if (fs.existsSync(folderPath)) {
 
 
 
-
+const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

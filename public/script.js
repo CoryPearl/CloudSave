@@ -1,8 +1,5 @@
 // List:
-//make chatbot
-//Make folders work 
-
-//Chat bot
+//Save uploaded folder files
 
 //clock
 function displayTime() {
@@ -42,153 +39,7 @@ function menuOnClick() {
     document.getElementById("menu-bg").classList.toggle("change-bg");
   }
 
-//All Folder Stuff
-function dropdown(){
-  document.getElementById("myDropdown").classList.toggle("show");
-}
 
-function addFile(){
-  const whole = document.createElement("div");;
-  const deleteButton = document.createElement("button");
-  const file3 = document.createElement("a");
-  const userInput = window.prompt("Enter File Name:");
-  const data = { userInput: userInput };
-  fetch('/addUserInput4', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  })
-    .then(response => response.json())
-  if (userInput.length !== 0 && userInput.length < 16) {
-    const uploadButton = document.createElement("input");
-    uploadButton.type = "file";
-    uploadButton.click();
-    uploadButton.addEventListener("change", function () {
-    const uploadedFile = uploadButton.files[0];
-    const objectURL = URL.createObjectURL(uploadedFile);
-    const data2 = { objectURL: objectURL };
-    fetch('/addUserInput5', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data2),
-    })
-      .then(response => response.json())
-    whole.style.display="flex";
-    whole.style.justifyContent = "space-between";
-    deleteButton.textContent = "X";
-    deleteButton.addEventListener("click", removeItem);
-    file3.setAttribute("href", objectURL);
-    file3.setAttribute("download", uploadedFile.name);
-    file3.innerHTML = userInput;
-    file3.style.backgroundColor = "#f1f1f1";
-    });
-    this.parentNode.appendChild(whole);
-    whole.appendChild(file);
-    file3.style.width = "90%";
-    whole.appendChild(deleteButton);
-  }
-  if(userInput.length == 0){
-    alert("Error no text found");
-      }
-  if(userInput.length > 25){
-    alert("Error too long please try again");
-  }
-}
-
-function newFolder() {
-  const dropdown1 = document.createElement("div");
-  const folderContainer = document.getElementById("files");
-
-  dropdown1.classList = "dropdown-content";
-  dropdown1.id = "myDropdown";
-
-  const userInput = window.prompt("Enter Folder Name:");
-  const data = { userInput: userInput };
-  if (userInput.length !== 0 && userInput.length < 16) {
-    
-    fetch('/addUserInput', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-      .then(response => response.json())
-      .then(result => {
-        // Handle the response from the server (if needed)
-        console.log(result);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-    const folder = document.createElement("div");
-    folder.classList.add("dropdown");
-    folder.style.width = "175px";
-    folder.style.height = "175px";
-    folder.style.display = "flex";
-    folder.style.flexDirection = "column";
-    folder.style.alignItems = "center";
-    folder.style.justifyContent = "center";
-    folder.id = "whole";
-
-    const uploadButton = document.createElement("p");
-    uploadButton.textContent = "Upload File";
-    uploadButton.style.fontSize = "18px";
-    uploadButton.style.color = "white";
-    uploadButton.style.backgroundColor = "rgb(88,88,88";
-    uploadButton.style.cursor = "pointer";
-    uploadButton.style.padding = "5px";
-    uploadButton.id = "uploadButton";
-    uploadButton.style.textAlign = "center";
-    uploadButton.addEventListener("click", addFile);
-
-    const button = document.createElement("button");
-    button.style.width = "150px";
-    button.style.height = "150px";
-    button.style.margin = "0px";
-    button.style.background = "url(folder.png)";
-    button.style.backgroundSize = "150px";
-    button.id = "button";
-    
-    button.addEventListener("click", function () {
-      dropdown1.classList.toggle("show");
-    });
-
-    const label = document.createElement("label");
-    label.innerText = userInput;
-
-    const closeButton = document.createElement("p");
-    closeButton.innerHTML = "Close";
-    closeButton.addEventListener("click", function () {
-      dropdown1.classList.remove("show");
-    });
-    closeButton.style.textAlign = "center";
-    closeButton.style.cursor = "pointer";
-    
-    const delBut = document.createElement("button");
-    delBut.textContent = "Delete";
-    delBut.addEventListener("click", removeItem);
-
-    folderContainer.appendChild(folder);
-    folder.style.zIndex = "0";
-    dropdown1.style.maxHeight = "150px";
-    folder.appendChild(button);
-    folder.appendChild(label);
-    folder.appendChild(delBut);
-    folder.appendChild(dropdown1);
-    dropdown1.appendChild(uploadButton);
-    dropdown1.appendChild(closeButton);
-    
-  } else if (userInput.length == 0) {
-    alert("Error: no text found");
-  } else if (userInput.length > 15) {
-    alert("Error: too long, please try again");
-  }
-}
 var filenames = [];
 var filenameURL = [];
 const loadFile = function(event) {
@@ -313,7 +164,6 @@ function printFileNames() {
           deleteButton.addEventListener("click", () => {
             deleteFileAndElement(filenameURL1);
           });
-          
   
           files.appendChild(whole);
           whole.style.zIndex = "10";
@@ -352,6 +202,9 @@ function deleteFileAndElement(fileName) {
       }
     })
     .catch(error => console.error(error));
+      }else{
+        printFileNames();
+        printFolders();
       }
     }
   }
@@ -367,24 +220,142 @@ function removeItem(){
   }
 }
 
-var folderFileUrl = [];
 var folderFileNames = [];
 var b = 0;
-function printFolders(){
-  fetch('/getFolderFileUrl')
-  .then(response => response.json())
-  .then(data => {
-    data.forEach(urlNames => {
-      folderFileUrl.push(urlNames);
+//All Folder Stuff
+function dropdown(){
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function addFile(){
+  const whole = document.createElement("div");;
+  const deleteButton = document.createElement("button");
+  const file = document.createElement("a");
+  const userInput = window.prompt("Enter File Name:");
+  if (userInput.length !== 0 && userInput.length < 16) {
+    const uploadButton = document.createElement("input");
+    uploadButton.type = "file";
+    uploadButton.click();
+    uploadButton.addEventListener("change", function () {
+    const uploadedFile = uploadButton.files[0];
+    const objectURL = URL.createObjectURL(uploadedFile);
+    whole.style.display="flex";
+    whole.style.justifyContent = "space-between";
+    deleteButton.textContent = "X";
+    deleteButton.addEventListener("click", removeItem);
+    file.setAttribute("href", objectURL);
+    file.setAttribute("download", uploadedFile.name);
+    file.innerHTML = userInput;
+    file.style.backgroundColor = "#f1f1f1";
+    });
+    this.parentNode.appendChild(whole);
+    whole.appendChild(file);
+    file.style.width = "90%";
+    whole.appendChild(deleteButton);
+  }
+  if(userInput.length == 0){
+    alert("Error no text found");
+      }
+  if(userInput.length > 25){
+    alert("Error too long please try again");
+  }
+}
+
+function newFolder() {
+  const dropdown1 = document.createElement("div");
+  const folderContainer = document.getElementById("files");
+
+  dropdown1.classList = "dropdown-content";
+  dropdown1.id = "myDropdown";
+
+  const userInput = window.prompt("Enter Folder Name:");
+  const data = { userInput: userInput };
+  if (userInput.length !== 0 && userInput.length < 16) {
+    
+    fetch('/addUserInput', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
     })
-  });
-  fetch('/getFolderFiles')
-        .then(response => response.json())
-        .then(data => {
-          data.forEach(fileNames => {
-            folderFileNames.push(fileNames);
+      .then(response => response.json())
+      .then(result => {
+        // Handle the response from the server (if needed)
+        console.log(result);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    const folder = document.createElement("div");
+    folder.classList.add("dropdown");
+    folder.style.width = "175px";
+    folder.style.height = "175px";
+    folder.style.display = "flex";
+    folder.style.flexDirection = "column";
+    folder.style.alignItems = "center";
+    folder.style.justifyContent = "center";
+    folder.id = "whole";
+
+    const uploadButton = document.createElement("p");
+    uploadButton.textContent = "Upload File";
+    uploadButton.style.fontSize = "18px";
+    uploadButton.style.color = "white";
+    uploadButton.style.backgroundColor = "rgb(88,88,88";
+    uploadButton.style.cursor = "pointer";
+    uploadButton.style.padding = "5px";
+    uploadButton.id = "uploadButton";
+    uploadButton.style.textAlign = "center";
+    uploadButton.addEventListener("click", addFile);
+
+    const button = document.createElement("button");
+    button.style.width = "150px";
+    button.style.height = "150px";
+    button.style.margin = "0px";
+    button.style.background = "url(folder.png)";
+    button.style.backgroundSize = "150px";
+    button.id = "button";
+    
+    button.addEventListener("click", function () {
+      dropdown1.classList.toggle("show");
+    });
+
+    const label = document.createElement("label");
+    label.innerText = userInput;
+
+    const closeButton = document.createElement("p");
+    closeButton.innerHTML = "Close";
+    closeButton.addEventListener("click", function () {
+      dropdown1.classList.remove("show");
+    });
+    closeButton.style.textAlign = "center";
+    closeButton.style.cursor = "pointer";
+    
+    const delBut = document.createElement("button");
+    delBut.textContent = "Delete";
+    delBut.addEventListener("click", removeFolder);
+    const folderName = userInput;
+          delBut.addEventListener("click", () => {
+            deleteFolderAndElement(folderName);
           });
-        });
+
+    folderContainer.appendChild(folder);
+    folder.style.zIndex = "0";
+    dropdown1.style.maxHeight = "150px";
+    folder.appendChild(button);
+    folder.appendChild(label);
+    folder.appendChild(delBut);
+    folder.appendChild(dropdown1);
+    dropdown1.appendChild(uploadButton);
+    dropdown1.appendChild(closeButton);
+    
+  } else if (userInput.length == 0) {
+    alert("Error: no text found");
+  } else if (userInput.length > 15) {
+    alert("Error: too long, please try again");
+  }
+}
+function printFolders(){
   fetch('/getUserInput')
   .then(response => response.json())
   .then(data => {
@@ -440,8 +411,11 @@ function printFolders(){
         
         const delBut = document.createElement("button");
         delBut.textContent = "Delete";
-        delBut.addEventListener("click", removeItem);
-    
+        delBut.addEventListener("click", removeFolder);   
+        const folderName = folderNames;
+          delBut.addEventListener("click", () => {
+            deleteFolderAndElement(folderName);
+          });
         folderContainer.appendChild(folder);
         folder.style.zIndex = "0";
         dropdown1.style.maxHeight = "150px";
@@ -475,6 +449,39 @@ function printFolders(){
     });
   });
 }
+function deleteFolderAndElement(folderName) {
+  if (f == 1){
+    f = 0;
+  const userConfirmed = confirm("Are you sure?");
+
+  if (userConfirmed) {
+    const data = { folderName: folderName };
+    fetch(`/deletefolder`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    .catch(error => console.error(error));
+      }else{
+        printFileNames();
+        printFolders();
+      }
+    }
+  }
+  
+var f = 0;
+  function removeFolder(){
+    const userConfirmed = confirm("Do you want to proceed?");
+    if(userConfirmed){
+      this.parentNode.remove();
+      f = 1;
+    }else{
+      f = 0;
+    }
+  }
+
 
 window.onload = function() {
   printFolders();

@@ -30,6 +30,12 @@
 			margin: 0px;
 			padding: 0px;
 		}
+		#goback{
+			position: absolute;
+			left: 50%;
+			top: 94%;
+			transform: translate(-50%, -50%);
+		}
 	</style>
 </head>
 <body>
@@ -43,6 +49,7 @@
 			</form>
 		</div>
 	</div>
+	<h1 id="goback"><a href="index.html">Go Back</a></h1>
 </body>
 <script>
     const userAction = async () => {
@@ -56,7 +63,8 @@
                 ]}),
             headers: {
                 "content-type": "application/json",
-                Authorization: "Bearer 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",
+				//api key after bearer
+                Authorization: "Bearer",
             }
         }).then((response) => {
             if (response.ok) {
