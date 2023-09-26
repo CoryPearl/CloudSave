@@ -1,5 +1,7 @@
 // List:
+//Make new uplaods apear on right
 //Save uploaded folder files
+
 
 //clock
 function displayTime() {
@@ -164,18 +166,20 @@ function printFileNames() {
           deleteButton.addEventListener("click", () => {
             deleteFileAndElement(filenameURL1);
           });
-  
+
           files.appendChild(whole);
           whole.style.zIndex = "10";
           whole.appendChild(file2);
           whole.appendChild(label);
           whole.appendChild(deleteButton);
+
+          
           i++;
             
         });
     })
     .catch(error => console.error(error));
-
+      
         
     })
     .catch(error => {

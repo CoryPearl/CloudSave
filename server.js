@@ -6,7 +6,13 @@ const path = require('path');
 
 const app = express();
 
-
+fs.mkdir('uploads', (err) => {
+  if (err) {
+    console.error(`Error creating folder: ${err}`);
+  } else {
+    console.log(`Folder "uploads" created successfully.`);
+  }
+});
 
 app.use(bodyParser.json());
 
@@ -115,7 +121,7 @@ app.post('/deleteFolder', (req, res) => {
   console.log(folderList);
   res.json({ success: true, message: 'User input added to the server array.' });
 });
-//auto emptys uploads folder
+//auto emptys uploads
 // const folderName = 'uploads';
 // const folderPath = path.join(__dirname, folderName);
 
@@ -135,9 +141,6 @@ app.post('/deleteFolder', (req, res) => {
 // } else {
 //   console.error(`Folder "${folderPath}" does not exist.`);
 // }
-
-
-
 
 const port = process.env.PORT || 3000;
 
