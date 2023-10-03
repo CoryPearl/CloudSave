@@ -29,6 +29,13 @@ const fileList = [];
 app.post('/addUserInput', (req, res) => {
   const { userInput } = req.body;
   folderList.push(userInput);
+  fs.mkdir(userInput, (err) => {
+    if (err) {
+      console.error(`Error creating folder: ${err}`);
+    } else {
+      console.log("Folder " + userInput + " created successfully.");
+    }
+  });
   console.log(folderList);
   res.json({ success: true, message: 'User input added to the server array.' });
 });
@@ -88,6 +95,28 @@ app.get('/list', (req, res) => {
   });
 });
 
+//folder file uploads
+app.post('/folderFiles', (req, res) => {
+  const { folderName } = req.body;
+  app.use('/' + folderName, express.static('uploads'));
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded.');
+  }
+
+  const uploadedFile = req.files.file;
+  const uploadPath = path.join(__dirname, folderName, uploadedFile.name);
+
+  uploadedFile.mv(uploadPath, (err) => {
+      if (err) {
+          return res.status(500).send(err);
+      }
+      res.send('File uploaded successfully.');
+  });
+});
+
+
+
 
 app.delete('/delete/:filename', (req, res) => {
   const fileName = req.params.filename;
@@ -114,6 +143,13 @@ app.delete('/delete/:filename', (req, res) => {
 
 app.post('/deleteFolder', (req, res) => {
   const { folderName } = req.body;
+  fs.rm(folderName, { recursive: true }, (error) => {
+    if (error) {
+      console.error(`Error deleting directory: ${error}`);
+    } else {
+      console.log(`Directory ${folderName} deleted successfully.`);
+    }
+  });
   const index3 = folderList.indexOf(folderName);
         if (index3 !== -1) {
             folderList.splice(index3, 1);

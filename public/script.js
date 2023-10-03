@@ -1,6 +1,7 @@
 // List:
-//Make new uplaods apear on right
-//Save uploaded folder files
+//make folders add items
+//Make folder file show up on reload
+//delete files from folders
 
 
 //clock
@@ -45,6 +46,7 @@ function menuOnClick() {
 var filenames = [];
 var filenameURL = [];
 const loadFile = function(event) {
+  window.alert("Warning! Do not re-use file names");
   const userInput = window.prompt("Enter File Name:");
   if (userInput.length !== 0 && userInput.length < 16) {
 
@@ -65,8 +67,8 @@ const loadFile = function(event) {
       file.setAttribute('download', uploadedFile.name);
       file.innerHTML = "<img src='file.png' width='112px' margin = '0'>"; 
       const whole = document.createElement('div');
-      whole.style.width = "175px";
-      whole.style.height = "175px";
+      whole.style.width = "173px";
+      whole.style.height = "173px";
       whole.style.display = "flex";
       whole.style.flexDirection = "column";      
       whole.style.alignItems = "center";
@@ -150,8 +152,8 @@ function printFileNames() {
           file2.setAttribute('download', `/uploads/${filenameURL[i]}`);
           file2.innerHTML = "<img src='file.png' width='112px' margin = '0'>"; 
           const whole = document.createElement('div');
-          whole.style.width = "175px";
-          whole.style.height = "175px";
+          whole.style.width = "173px";
+          whole.style.height = "173px";
           whole.style.display = "flex";
           whole.style.flexDirection = "column";      
           whole.style.alignItems = "center";
@@ -231,16 +233,17 @@ function dropdown(){
   document.getElementById("myDropdown").classList.toggle("show");
 }
 
-function addFile(){
-  const whole = document.createElement("div");;
+const addFile = function(folderName){
+  const whole = document.createElement("div");
   const deleteButton = document.createElement("button");
   const file = document.createElement("a");
-  const userInput = window.prompt("Enter File Name:");
-  if (userInput.length !== 0 && userInput.length < 16) {
-    const uploadButton = document.createElement("input");
-    uploadButton.type = "file";
-    uploadButton.click();
-    uploadButton.addEventListener("change", function () {
+  const uploadButton = document.createElement("input");
+  var userInput;
+  uploadButton.type = "file";
+  uploadButton.click();
+  uploadButton.addEventListener("change", function () {
+    window.alert("Warning! Do not re-use file names");
+    userInput = window.prompt("Enter File Name:");
     const uploadedFile = uploadButton.files[0];
     const objectURL = URL.createObjectURL(uploadedFile);
     whole.style.display="flex";
@@ -251,21 +254,32 @@ function addFile(){
     file.setAttribute("download", uploadedFile.name);
     file.innerHTML = userInput;
     file.style.backgroundColor = "#f1f1f1";
-    });
+    addFile2(uploadedFile, userInput, folderName);
     this.parentNode.appendChild(whole);
     whole.appendChild(file);
     file.style.width = "90%";
     whole.appendChild(deleteButton);
-  }
-  if(userInput.length == 0){
-    alert("Error no text found");
-      }
-  if(userInput.length > 25){
-    alert("Error too long please try again");
-  }
+    console.log("ran");
+  })
+}
+  
+
+function addFile2(file, fileName, folderName) {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('fileName', fileName);
+  formData.append('folderName', folderName);
+
+  fetch('/folderFiles', {
+    method: 'POST',
+    body: formData,
+  })
+  .then(response => response.text())
+  .catch(error => console.error(error));
 }
 
 function newFolder() {
+  window.alert("Warning! Do not re-use folder names");
   const dropdown1 = document.createElement("div");
   const folderContainer = document.getElementById("files");
 
@@ -293,8 +307,8 @@ function newFolder() {
       });
     const folder = document.createElement("div");
     folder.classList.add("dropdown");
-    folder.style.width = "175px";
-    folder.style.height = "175px";
+    folder.style.width = "173px";
+    folder.style.height = "173px";
     folder.style.display = "flex";
     folder.style.flexDirection = "column";
     folder.style.alignItems = "center";
@@ -310,7 +324,11 @@ function newFolder() {
     uploadButton.style.padding = "5px";
     uploadButton.id = "uploadButton";
     uploadButton.style.textAlign = "center";
-    uploadButton.addEventListener("click", addFile);
+
+    //need to get file from respective folder
+    uploadButton.addEventListener("click", () => {
+      addFile(userInput);
+    });
 
     const button = document.createElement("button");
     button.style.width = "150px";
@@ -371,8 +389,8 @@ function printFolders(){
       dropdown1.id = "myDropdown";
         const folder = document.createElement("div");
         folder.classList.add("dropdown");
-        folder.style.width = "175px";
-        folder.style.height = "175px";
+        folder.style.width = "173px";
+        folder.style.height = "173px";
         folder.style.display = "flex";
         folder.style.flexDirection = "column";
         folder.style.alignItems = "center";
@@ -388,7 +406,10 @@ function printFolders(){
         uploadButton.style.padding = "5px";
         uploadButton.id = "uploadButton";
         uploadButton.style.textAlign = "center";
-        uploadButton.addEventListener("click", addFile);
+        uploadButton.addEventListener("click", () => {
+          addFile(folderNames);
+        });
+    
     
         const button = document.createElement("button");
         button.style.width = "150px";

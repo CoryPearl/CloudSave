@@ -13,6 +13,7 @@
 			border: 1px solid black;
 			position: absolute;
 			top: 50%;
+			left: 50%;
 			transform: translateX(-50%);
 			width: 50%;
 			display: inline-flex;
@@ -49,6 +50,7 @@
 			</form>
 		</div>
 	</div>
+	<input type="text" id="api-key" placeholder="Enter API-Key">
 	<h1 id="goback"><a href="index.html">Go Back</a></h1>
 </body>
 <script>
@@ -64,7 +66,7 @@
             headers: {
                 "content-type": "application/json",
 				//api key after bearer
-                Authorization: "Bearer",
+                Authorization: "Bearer " + document.getElementById("api-key").value,
             }
         }).then((response) => {
             if (response.ok) {
